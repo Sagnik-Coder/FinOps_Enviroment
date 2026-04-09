@@ -1,3 +1,13 @@
+---
+title: FinOpsEnv Benchmark
+emoji: 🌩️
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # 🌩️ FinOpsEnv: Adversarial Cloud Optimization Benchmark
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
