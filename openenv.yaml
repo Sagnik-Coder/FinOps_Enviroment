@@ -1,13 +1,24 @@
-name: FinOps
+name: FinOpsEnv
 description: Adversarial Cloud FinOps Benchmark
 version: 1.0.0
 start_command: server.app:main
 port: 7860
+
 endpoints:
-  tasks: /tasks
   reset: /reset
   step: /step
-  grader: /grader
+
+tasks:
+  - id: easy
+    name: Easy
+    grader: /grader
+  - id: medium
+    name: Medium
+    grader: /grader
+  - id: hard
+    name: Hard
+    grader: /grader
+
 docker:
   build_context: .
   dockerfile: Dockerfile
