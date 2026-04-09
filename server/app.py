@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -49,7 +49,7 @@ class EnvironmentState:
         if not task_id:
             task_id = "hard"
 
-        # FALLBACK MECHANISM: Search everywhere for the JSON files
+        # FALLBACK MECHANISM
         paths_to_try = [
             f"data/{task_id}.json",
             f"{task_id}.json",
@@ -66,7 +66,7 @@ class EnvironmentState:
             except FileNotFoundError:
                 continue
                 
-        # BULLETPROOFING: If files are completely missing, load dummy data instead of crashing!
+        # BULLETPROOFING
         if not data:
             data = {
                 "metadata": {
@@ -122,32 +122,30 @@ state = EnvironmentState()
 
 @app.get("/tasks")
 async def get_tasks():
-    # Strict OpenEnv format. No extra keys.
+    # Use task_id explicitly
     return {
         "tasks": [
-            {"id": "easy", "name": "Easy", "grader": "/grader"},
-            {"id": "medium", "name": "Medium", "grader": "/grader"},
-            {"id": "hard", "name": "Hard", "grader": "/grader"}
+            {"task_id": "easy", "name": "Easy", "grader": "/grader"},
+            {"task_id": "medium", "name": "Medium", "grader": "/grader"},
+            {"task_id": "hard", "name": "Hard", "grader": "/grader"}
         ]
     }
 
+# 🚨 THE MAGIC FIX: Accept POST requests so the validator doesn't get a 405 error!
 @app.get("/grader")
-async def get_score():
-    # If the validator pings the grader before loading a scenario
+@app.post("/grader")
+async def get_score(request: Request = None):
     if getattr(state, "max_possible_savings", 0.0) <= 0:
          return {"score": 0.5, "reason": "Environment initialized."}
 
-    # Handle a crash
     if state.uptime == 0.0:
         return {"score": 0.05, "reason": "System crashed. Mission failed."}
     
     savings = state.initial_bill - state.current_bill
     
-    # Handle cowardice (no savings)
     if savings <= 0:
         return {"score": 0.05, "reason": "Failed to optimize."}
     
-    # Mathematical clamping to prevent 0.0 or 1.0 boundary errors
     raw_score = savings / state.max_possible_savings
     final_score = max(0.05, min(0.95, raw_score))
     
@@ -196,5 +194,6 @@ async def take_step(action: Action):
 def main():
     import uvicorn
     uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+
 if __name__ == "__main__":
     main()
