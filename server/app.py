@@ -125,9 +125,9 @@ async def get_tasks():
     # Strict OpenEnv format. No extra keys.
     return {
         "tasks": [
-            {"id": "easy", "name": "Easy", "description": "Basic server cleanup."},
-            {"id": "medium", "name": "Medium", "description": "Network optimization."},
-            {"id": "hard", "name": "Hard", "description": "Adversarial dependency trap."}
+            {"id": "easy", "name": "Easy", "grader": "/grader"},
+            {"id": "medium", "name": "Medium", "grader": "/grader"},
+            {"id": "hard", "name": "Hard", "grader": "/grader"}
         ]
     }
 
