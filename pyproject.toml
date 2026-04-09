@@ -1,0 +1,21 @@
+[project]
+name = "finops-env"
+version = "1.0.0"
+description = "Adversarial Cloud FinOps Optimization Benchmark"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "requests",
+    "openai",
+    "numpy",
+    "openenv-core>=0.2.0" 
+]
+
+# THIS IS THE MAGIC FIX
+[project.scripts]
+server = "server.app:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
